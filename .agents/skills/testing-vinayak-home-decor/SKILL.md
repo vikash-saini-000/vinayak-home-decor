@@ -86,6 +86,9 @@ description: End-to-end testing of the Vinayak Home Decor MERN luxury furniture 
 - **Image upload via browser testing**: Use JavaScript `DataTransfer` API to programmatically set files on the hidden file input, since drag-and-drop is hard to automate.
 - **Browser alerts**: Some older code paths might use `window.alert()`. Current code uses toast notifications — if you see alerts, the wrong server version may be running.
 - **Demo fallback**: Frontend gracefully falls back to demo data if API is unreachable. When testing with real backend, ensure the backend is actually running or you'll only see demo content.
+- **Image uploads use local multer storage** (not Cloudinary). Images are stored in `backend/public/uploads/` and served at `/uploads/filename.jpg`.
+- The loading screen animation takes ~2-3 seconds on each page navigation.
+- Vite dev server on port 5173 proxies `/api` to `http://localhost:5000` and `/uploads` to `http://localhost:5000`.
 
 ## Devin Secrets Needed
 
