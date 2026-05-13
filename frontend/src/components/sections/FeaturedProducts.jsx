@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { Link } from 'react-router-dom';
 import { FaWhatsapp } from 'react-icons/fa';
 import SectionHeading from '../ui/SectionHeading';
 import { productAPI } from '../../services/api';
@@ -28,29 +29,32 @@ const ProductCard = ({ product, index }) => {
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="group relative"
     >
-      <div className="relative overflow-hidden aspect-[4/5] bg-[#111]">
-        <img
-          src={product.images[0]?.url}
-          alt={product.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <Link to={`/product/${product._id}`} className="block">
+        <div className="relative overflow-hidden aspect-[4/5] bg-[#111]">
+          <img
+            src={product.images[0]?.url}
+            alt={product.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-          <a
-            href={`https://wa.me/919876543210?text=${whatsappMsg}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white text-sm font-medium hover:bg-[#22c55e] transition-colors duration-300"
-          >
-            <FaWhatsapp className="text-lg" />
-            Inquire on WhatsApp
-          </a>
+          <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+            <a
+              href={`https://wa.me/919876543210?text=${whatsappMsg}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white text-sm font-medium hover:bg-[#22c55e] transition-colors duration-300"
+            >
+              <FaWhatsapp className="text-lg" />
+              Inquire on WhatsApp
+            </a>
+          </div>
         </div>
-      </div>
+      </Link>
 
-      <div className="mt-4 space-y-1">
+      <Link to={`/product/${product._id}`} className="block mt-4 space-y-1">
         <span className="text-[#C8A97E] text-xs tracking-[0.2em] uppercase">
           {product.category}
         </span>
@@ -60,7 +64,7 @@ const ProductCard = ({ product, index }) => {
         <p className="text-white/60 text-sm">
           ₹{product.price.toLocaleString('en-IN')}
         </p>
-      </div>
+      </Link>
     </motion.div>
   );
 };

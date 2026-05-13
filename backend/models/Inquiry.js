@@ -23,6 +23,16 @@ const inquirySchema = new mongoose.Schema(
       required: [true, 'Message is required'],
       maxlength: [2000, 'Message cannot exceed 2000 characters'],
     },
+    product: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    status: {
+      type: String,
+      enum: ['New', 'Contacted', 'Negotiating', 'Closed'],
+      default: 'New',
+    },
     read: {
       type: Boolean,
       default: false,
@@ -33,6 +43,7 @@ const inquirySchema = new mongoose.Schema(
   }
 );
 
+inquirySchema.index({ status: 1 });
 inquirySchema.index({ read: 1 });
 inquirySchema.index({ createdAt: -1 });
 

@@ -2,9 +2,11 @@ import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Loader from './components/ui/Loader';
 import MainLayout from './layouts/MainLayout';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
@@ -40,6 +42,14 @@ const App = () => {
             }
           />
           <Route
+            path="/product/:id"
+            element={
+              <MainLayout>
+                <ProductDetail />
+              </MainLayout>
+            }
+          />
+          <Route
             path="/about"
             element={
               <MainLayout>
@@ -66,6 +76,7 @@ const App = () => {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
+        <WhatsAppButton />
       </Suspense>
     </>
   );

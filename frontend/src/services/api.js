@@ -19,6 +19,7 @@ export const productAPI = {
   getOne: (id) => api.get(`/products/${id}`),
   create: (data) => api.post('/products', data),
   update: (id, data) => api.put(`/products/${id}`, data),
+  toggleFeatured: (id) => api.put(`/products/${id}/featured`),
   delete: (id) => api.delete(`/products/${id}`),
 };
 
@@ -50,7 +51,13 @@ export const inquiryAPI = {
   create: (data) => api.post('/inquiries', data),
   getAll: (params) => api.get('/inquiries', { params }),
   markAsRead: (id) => api.put(`/inquiries/${id}/read`),
+  updateStatus: (id, status) => api.put(`/inquiries/${id}/status`, { status }),
   delete: (id) => api.delete(`/inquiries/${id}`),
+};
+
+export const settingsAPI = {
+  get: () => api.get('/settings'),
+  update: (data) => api.put('/settings', data),
 };
 
 export default api;

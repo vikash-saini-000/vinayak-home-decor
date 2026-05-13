@@ -22,9 +22,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [location]);
+  const closeMobile = () => setMobileOpen(false);
 
   return (
     <>
@@ -97,6 +95,7 @@ const Navbar = () => {
               >
                 <Link
                   to={link.path}
+                  onClick={closeMobile}
                   className={`font-[family-name:var(--font-heading)] text-3xl transition-colors duration-300 ${
                     location.pathname === link.path
                       ? 'text-[#C8A97E]'
@@ -115,6 +114,7 @@ const Navbar = () => {
             >
               <Link
                 to="/contact"
+                onClick={closeMobile}
                 className="mt-4 px-8 py-3 border border-[#C8A97E]/30 text-[#C8A97E] text-sm tracking-[0.3em] uppercase hover:bg-[#C8A97E] hover:text-[#0A0A0A] transition-all duration-500"
               >
                 Inquire Now

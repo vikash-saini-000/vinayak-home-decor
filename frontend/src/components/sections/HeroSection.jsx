@@ -1,12 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { Link } from 'react-router-dom';
 import { HiArrowDown } from 'react-icons/hi';
+import { FaWhatsapp } from 'react-icons/fa';
+import { settingsAPI } from '../../services/api';
 
 const HeroSection = () => {
   const heroRef = useRef(null);
   const parallaxRef = useRef(null);
+  const [whatsappNumber, setWhatsappNumber] = useState('919876543210');
+
+  useEffect(() => {
+    settingsAPI.get().then(({ data }) => {
+      if (data?.whatsappNumber) setWhatsappNumber(data.whatsappNumber);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -108,6 +117,15 @@ const HeroSection = () => {
           >
             Get in Touch
           </Link>
+          <a
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi! I visited your website and I am interested in your furniture.')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-8 py-4 bg-[#25D366] text-white text-sm font-semibold tracking-[0.2em] uppercase hover:bg-[#22c55e] transition-all duration-500 shadow-lg shadow-[#25D366]/10"
+          >
+            <FaWhatsapp className="text-lg" />
+            WhatsApp
+          </a>
         </motion.div>
       </div>
 

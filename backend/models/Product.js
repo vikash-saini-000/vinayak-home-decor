@@ -29,6 +29,16 @@ const productSchema = new mongoose.Schema(
         publicId: { type: String, default: '' },
       },
     ],
+    material: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    dimensions: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     featured: {
       type: Boolean,
       default: false,

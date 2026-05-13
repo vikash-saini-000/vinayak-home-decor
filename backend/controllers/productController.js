@@ -3,10 +3,17 @@ import { deleteFile } from '../config/upload.js';
 
 export const getProducts = async (req, res) => {
   try {
-    const { category, featured, limit = 50, page = 1 } = req.query;
+    const { category, featured, search, limit = 50, page = 1 } = req.query;
     const filter = {};
     if (category) filter.category = category;
     if (featured === 'true') filter.featured = true;
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } },
+      ];
+    }
 
     const products = await Product.find(filter)
       .sort({ createdAt: -1 })
@@ -35,7 +42,7 @@ export const getProduct = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, category, price, featured } = req.body;
+    const { title, description, category, price, featured, material, dimensions } = req.body;
     const images = req.files
       ? req.files.map((file) => ({
           url: `/uploads/${file.filename}`,
@@ -49,6 +56,8 @@ export const createProduct = async (req, res) => {
       category,
       price: Number(price),
       images,
+      material: material || '',
+      dimensions: dimensions || '',
       featured: featured === 'true',
     });
 
@@ -65,13 +74,15 @@ export const updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const { title, description, category, price, featured, existingImages } = req.body;
+    const { title, description, category, price, featured, existingImages, material, dimensions } = req.body;
 
     product.title = title || product.title;
     product.description = description || product.description;
     product.category = category || product.category;
     product.price = price ? Number(price) : product.price;
     product.featured = featured !== undefined ? featured === 'true' : product.featured;
+    if (material !== undefined) product.material = material;
+    if (dimensions !== undefined) product.dimensions = dimensions;
 
     if (existingImages) {
       const kept = JSON.parse(existingImages);
@@ -92,6 +103,20 @@ export const updateProduct = async (req, res) => {
       product.images = [...product.images, ...newImages];
     }
 
+    const updated = await product.save();
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const toggleFeatured = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    product.featured = !product.featured;
     const updated = await product.save();
     res.json(updated);
   } catch (error) {
