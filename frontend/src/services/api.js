@@ -32,4 +32,25 @@ export const contactAPI = {
   update: (data) => api.put('/contact', data),
 };
 
+export const testimonialAPI = {
+  getAll: () => api.get('/testimonials'),
+  create: (data) => api.post('/testimonials', data),
+  update: (id, data) => api.put(`/testimonials/${id}`, data),
+  delete: (id) => api.delete(`/testimonials/${id}`),
+};
+
+export const galleryAPI = {
+  getAll: (params) => api.get('/gallery', { params }),
+  create: (data) => api.post('/gallery', data),
+  update: (id, data) => api.put(`/gallery/${id}`, data),
+  delete: (id) => api.delete(`/gallery/${id}`),
+};
+
+export const inquiryAPI = {
+  create: (data) => api.post('/inquiries', data),
+  getAll: (params) => api.get('/inquiries', { params }),
+  markAsRead: (id) => api.put(`/inquiries/${id}/read`),
+  delete: (id) => api.delete(`/inquiries/${id}`),
+};
+
 export default api;

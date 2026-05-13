@@ -1,21 +1,45 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FaInstagram, FaFacebookF, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 import { HiArrowUp } from 'react-icons/hi';
+import { contactAPI } from '../services/api';
 
 const Footer = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [contactInfo, setContactInfo] = useState({
+    phone: '+91 98765 43210',
+    email: 'info@vinayakhomedecor.com',
+    address: 'Main Market, India',
+    whatsapp: '+91 98765 43210',
+    instagram: '',
+    facebook: '',
+    youtube: '',
+  });
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const { data } = await contactAPI.get();
+        if (data) setContactInfo((prev) => ({ ...prev, ...data }));
+      } catch {
+        // keep defaults
+      }
+    };
+    fetchContact();
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const whatsappNumber = contactInfo.whatsapp.replace(/[^0-9]/g, '');
   const socialLinks = [
-    { icon: <FaInstagram />, href: '#', label: 'Instagram' },
-    { icon: <FaFacebookF />, href: '#', label: 'Facebook' },
-    { icon: <FaYoutube />, href: '#', label: 'YouTube' },
-    { icon: <FaWhatsapp />, href: '#', label: 'WhatsApp' },
+    { icon: <FaInstagram />, href: contactInfo.instagram || '#', label: 'Instagram' },
+    { icon: <FaFacebookF />, href: contactInfo.facebook || '#', label: 'Facebook' },
+    { icon: <FaYoutube />, href: contactInfo.youtube || '#', label: 'YouTube' },
+    { icon: <FaWhatsapp />, href: `https://wa.me/${whatsappNumber}`, label: 'WhatsApp' },
   ];
 
   return (
@@ -84,9 +108,9 @@ const Footer = () => {
             <h4 className="text-[#C8A97E] text-xs tracking-[0.3em] uppercase mb-6">Contact</h4>
             <div className="flex flex-col gap-3 text-white/40 text-sm">
               <p>Vinayak Home Decor</p>
-              <p>Main Market, India</p>
-              <p>+91 98765 43210</p>
-              <p>info@vinayakhomedecor.com</p>
+              <p>{contactInfo.address}</p>
+              <p>{contactInfo.phone}</p>
+              <p>{contactInfo.email}</p>
             </div>
           </motion.div>
         </div>

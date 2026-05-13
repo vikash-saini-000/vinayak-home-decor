@@ -1,51 +1,17 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FaWhatsapp } from 'react-icons/fa';
 import SectionHeading from '../ui/SectionHeading';
+import { productAPI } from '../../services/api';
 
 const demoProducts = [
-  {
-    _id: '1',
-    title: 'Royal Chesterfield Sofa',
-    category: 'Sofas',
-    price: 89999,
-    images: [{ url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80' }],
-  },
-  {
-    _id: '2',
-    title: 'Empress King Bed',
-    category: 'Beds',
-    price: 125000,
-    images: [{ url: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&q=80' }],
-  },
-  {
-    _id: '3',
-    title: 'Executive Office Desk',
-    category: 'Office Furniture',
-    price: 45000,
-    images: [{ url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80' }],
-  },
-  {
-    _id: '4',
-    title: 'Heritage Dining Table',
-    category: 'Dining',
-    price: 78000,
-    images: [{ url: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80' }],
-  },
-  {
-    _id: '5',
-    title: 'Artisan Floor Lamp',
-    category: 'Decor',
-    price: 15000,
-    images: [{ url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80' }],
-  },
-  {
-    _id: '6',
-    title: 'Bespoke Bookshelf',
-    category: 'Custom Furniture',
-    price: 55000,
-    images: [{ url: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=600&q=80' }],
-  },
+  { _id: '1', title: 'Royal Chesterfield Sofa', category: 'Sofas', price: 89999, images: [{ url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80' }] },
+  { _id: '2', title: 'Empress King Bed', category: 'Beds', price: 125000, images: [{ url: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&q=80' }] },
+  { _id: '3', title: 'Executive Office Desk', category: 'Office Furniture', price: 45000, images: [{ url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80' }] },
+  { _id: '4', title: 'Heritage Dining Table', category: 'Dining', price: 78000, images: [{ url: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80' }] },
+  { _id: '5', title: 'Artisan Floor Lamp', category: 'Decor', price: 15000, images: [{ url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80' }] },
+  { _id: '6', title: 'Bespoke Bookshelf', category: 'Custom Furniture', price: 55000, images: [{ url: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=600&q=80' }] },
 ];
 
 const ProductCard = ({ product, index }) => {
@@ -100,6 +66,22 @@ const ProductCard = ({ product, index }) => {
 };
 
 const FeaturedProducts = () => {
+  const [products, setProducts] = useState(demoProducts);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await productAPI.getAll({ featured: 'true', limit: 6 });
+        if (data.products?.length > 0) {
+          setProducts(data.products);
+        }
+      } catch {
+        // keep demo fallback
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <section className="section-padding relative bg-[#0A0A0A]">
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#E8956A]/3 rounded-full blur-[180px]" />
@@ -110,7 +92,7 @@ const FeaturedProducts = () => {
           description="A curated selection of our finest creations, each piece telling its own story of luxury."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {demoProducts.map((product, i) => (
+          {products.map((product, i) => (
             <ProductCard key={product._id} product={product} index={i} />
           ))}
         </div>

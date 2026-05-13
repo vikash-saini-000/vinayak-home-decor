@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import SectionHeading from '../ui/SectionHeading';
+import { testimonialAPI } from '../../services/api';
 
-const testimonials = [
+const demoTestimonials = [
   {
     name: 'Priya Sharma',
     role: 'Interior Designer',
@@ -33,14 +34,30 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   const [current, setCurrent] = useState(0);
+  const [testimonials, setTestimonials] = useState(demoTestimonials);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
 
   useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const { data } = await testimonialAPI.getAll();
+        if (data?.length > 0) {
+          setTestimonials(data);
+        }
+      } catch {
+        // keep demo fallback
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
+  useEffect(() => {
+    if (testimonials.length === 0) return;
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % testimonials.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [testimonials.length]);
 
   const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
   const next = () => setCurrent((c) => (c + 1) % testimonials.length);

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { HiX } from 'react-icons/hi';
 import SectionHeading from '../ui/SectionHeading';
+import { galleryAPI } from '../../services/api';
 
-const galleryImages = [
+const demoGalleryImages = [
   { url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80', span: 'col-span-2 row-span-2' },
   { url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80', span: '' },
   { url: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80', span: '' },
@@ -15,8 +16,30 @@ const galleryImages = [
   { url: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600&q=80', span: '' },
 ];
 
+const spanPatterns = ['col-span-2 row-span-2', '', '', '', 'col-span-2', '', '', ''];
+
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [galleryImages, setGalleryImages] = useState(demoGalleryImages);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const { data } = await galleryAPI.getAll();
+        if (data?.length > 0) {
+          const mapped = data.map((item, i) => ({
+            url: item.image?.url || '',
+            span: spanPatterns[i % spanPatterns.length] || '',
+            title: item.title,
+          }));
+          setGalleryImages(mapped);
+        }
+      } catch {
+        // keep demo fallback
+      }
+    };
+    fetchGallery();
+  }, []);
 
   return (
     <section className="section-padding relative">

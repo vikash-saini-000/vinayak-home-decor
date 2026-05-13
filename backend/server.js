@@ -6,6 +6,9 @@ import seedAdmin from './utils/seedAdmin.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import testimonialRoutes from './routes/testimonialRoutes.js';
+import galleryRoutes from './routes/galleryRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -24,6 +27,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/gallery', galleryRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

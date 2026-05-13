@@ -1,27 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FaWhatsapp, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 import SectionHeading from '../ui/SectionHeading';
+import { inquiryAPI, contactAPI } from '../../services/api';
 
 const ContactSection = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [focused, setFocused] = useState('');
+  const [submitStatus, setSubmitStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [contactDetails, setContactDetails] = useState({
+    phone: '+91 98765 43210',
+    whatsapp: '+91 98765 43210',
+    email: 'info@vinayakhomedecor.com',
+    address: 'Main Market, India',
+    mapUrl: '',
+  });
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const { data } = await contactAPI.get();
+        if (data) {
+          setContactDetails({
+            phone: data.phone || '+91 98765 43210',
+            whatsapp: data.whatsapp || '+91 98765 43210',
+            email: data.email || 'info@vinayakhomedecor.com',
+            address: data.address || 'Main Market, India',
+            mapUrl: data.mapUrl || '',
+          });
+        }
+      } catch {
+        // keep defaults
+      }
+    };
+    fetchContact();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const msg = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nMessage: ${formData.message}`
-    );
-    window.open(`https://wa.me/919876543210?text=${msg}`, '_blank');
+    setSubmitting(true);
+    setSubmitStatus('');
+    try {
+      await inquiryAPI.create(formData);
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch {
+      setSubmitStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
+  const whatsappNumber = contactDetails.whatsapp.replace(/[^0-9]/g, '');
+
   const contactInfo = [
-    { icon: <FaPhone />, label: 'Phone', value: '+91 98765 43210', href: 'tel:+919876543210' },
-    { icon: <FaWhatsapp />, label: 'WhatsApp', value: '+91 98765 43210', href: 'https://wa.me/919876543210' },
-    { icon: <FaEnvelope />, label: 'Email', value: 'info@vinayakhomedecor.com', href: 'mailto:info@vinayakhomedecor.com' },
-    { icon: <FaMapMarkerAlt />, label: 'Visit Us', value: 'Main Market, India', href: '#' },
+    { icon: <FaPhone />, label: 'Phone', value: contactDetails.phone, href: `tel:${contactDetails.phone.replace(/[^0-9+]/g, '')}` },
+    { icon: <FaWhatsapp />, label: 'WhatsApp', value: contactDetails.whatsapp, href: `https://wa.me/${whatsappNumber}` },
+    { icon: <FaEnvelope />, label: 'Email', value: contactDetails.email, href: `mailto:${contactDetails.email}` },
+    { icon: <FaMapMarkerAlt />, label: 'Visit Us', value: contactDetails.address, href: '#' },
   ];
 
   return (
@@ -87,11 +126,22 @@ const ContactSection = () => {
                   required
                 />
               </div>
+              {submitStatus === 'success' && (
+                <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-400 text-sm text-center">
+                  Thank you! Your inquiry has been submitted successfully.
+                </div>
+              )}
+              {submitStatus === 'error' && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+                  Something went wrong. Please try again or contact us via WhatsApp.
+                </div>
+              )}
               <button
                 type="submit"
-                className="group relative w-full py-4 bg-[#C8A97E] text-[#0A0A0A] font-semibold text-sm tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:shadow-lg hover:shadow-[#C8A97E]/20"
+                disabled={submitting}
+                className="group relative w-full py-4 bg-[#C8A97E] text-[#0A0A0A] font-semibold text-sm tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:shadow-lg hover:shadow-[#C8A97E]/20 disabled:opacity-50"
               >
-                <span className="relative z-10">Send via WhatsApp</span>
+                <span className="relative z-10">{submitting ? 'Sending...' : 'Send Inquiry'}</span>
                 <div className="absolute inset-0 bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
               </button>
             </form>
@@ -133,7 +183,7 @@ const ContactSection = () => {
               className="mt-8 aspect-video overflow-hidden border border-white/5"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.5!2d75.78!3d26.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDU0JzM2LjAiTiA3NcKwNDYnNDguMCJF!5e0!3m2!1sen!2sin!4v1"
+                src={contactDetails.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.5!2d75.78!3d26.91!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDU0JzM2LjAiTiA3NcKwNDYnNDguMCJF!5e0!3m2!1sen!2sin!4v1"}
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) brightness(0.8) contrast(1.2)' }}

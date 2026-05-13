@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FaWhatsapp } from 'react-icons/fa';
+import { productAPI } from '../services/api';
 
 const categories = ['All', 'Sofas', 'Beds', 'Office Furniture', 'Dining', 'Decor', 'Custom Furniture'];
 
@@ -19,10 +20,25 @@ const demoProducts = [
 
 const CollectionsPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [allProducts, setAllProducts] = useState(demoProducts);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await productAPI.getAll({ limit: 100 });
+        if (data.products?.length > 0) {
+          setAllProducts(data.products);
+        }
+      } catch {
+        // keep demo fallback
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const filtered = activeCategory === 'All'
-    ? demoProducts
-    : demoProducts.filter((p) => p.category === activeCategory);
+    ? allProducts
+    : allProducts.filter((p) => p.category === activeCategory);
 
   return (
     <div className="min-h-screen pt-32">
