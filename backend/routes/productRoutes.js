@@ -7,7 +7,7 @@ import {
   deleteProduct,
 } from '../controllers/productController.js';
 import protect from '../middleware/auth.js';
-import { upload } from '../config/cloudinary.js';
+import upload from '../config/upload.js';
 
 const router = Router();
 

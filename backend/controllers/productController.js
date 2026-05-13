@@ -1,5 +1,5 @@
 import Product from '../models/Product.js';
-import { cloudinary } from '../config/cloudinary.js';
+import { deleteFile } from '../config/upload.js';
 
 export const getProducts = async (req, res) => {
   try {
@@ -37,7 +37,10 @@ export const createProduct = async (req, res) => {
   try {
     const { title, description, category, price, featured } = req.body;
     const images = req.files
-      ? req.files.map((file) => ({ url: file.path, publicId: file.filename }))
+      ? req.files.map((file) => ({
+          url: `/uploads/${file.filename}`,
+          publicId: file.filename,
+        }))
       : [];
 
     const product = await Product.create({
@@ -76,13 +79,16 @@ export const updateProduct = async (req, res) => {
         (img) => !kept.find((k) => k.publicId === img.publicId)
       );
       for (const img of removed) {
-        await cloudinary.uploader.destroy(img.publicId);
+        deleteFile(img.url);
       }
       product.images = kept;
     }
 
     if (req.files?.length) {
-      const newImages = req.files.map((file) => ({ url: file.path, publicId: file.filename }));
+      const newImages = req.files.map((file) => ({
+        url: `/uploads/${file.filename}`,
+        publicId: file.filename,
+      }));
       product.images = [...product.images, ...newImages];
     }
 
@@ -101,7 +107,7 @@ export const deleteProduct = async (req, res) => {
     }
 
     for (const img of product.images) {
-      await cloudinary.uploader.destroy(img.publicId);
+      deleteFile(img.url);
     }
 
     await Product.findByIdAndDelete(req.params.id);

@@ -14,7 +14,7 @@ const gallerySchema = new mongoose.Schema(
     },
     image: {
       url: { type: String, required: true },
-      publicId: { type: String, required: true },
+      publicId: { type: String, default: '' },
     },
     order: {
       type: Number,

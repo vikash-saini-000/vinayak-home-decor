@@ -1,5 +1,5 @@
 import Testimonial from '../models/Testimonial.js';
-import { cloudinary } from '../config/cloudinary.js';
+import { deleteFile } from '../config/upload.js';
 
 export const getTestimonials = async (req, res) => {
   try {
@@ -14,7 +14,7 @@ export const createTestimonial = async (req, res) => {
   try {
     const { name, role, text, rating } = req.body;
     const image = req.file
-      ? { url: req.file.path, publicId: req.file.filename }
+      ? { url: `/uploads/${req.file.filename}`, publicId: req.file.filename }
       : { url: '', publicId: '' };
 
     const testimonial = await Testimonial.create({
@@ -46,9 +46,12 @@ export const updateTestimonial = async (req, res) => {
 
     if (req.file) {
       if (testimonial.image.publicId) {
-        await cloudinary.uploader.destroy(testimonial.image.publicId);
+        deleteFile(testimonial.image.url);
       }
-      testimonial.image = { url: req.file.path, publicId: req.file.filename };
+      testimonial.image = {
+        url: `/uploads/${req.file.filename}`,
+        publicId: req.file.filename,
+      };
     }
 
     const updated = await testimonial.save();
@@ -66,7 +69,7 @@ export const deleteTestimonial = async (req, res) => {
     }
 
     if (testimonial.image.publicId) {
-      await cloudinary.uploader.destroy(testimonial.image.publicId);
+      deleteFile(testimonial.image.url);
     }
 
     await Testimonial.findByIdAndDelete(req.params.id);

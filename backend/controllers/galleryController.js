@@ -1,5 +1,5 @@
 import Gallery from '../models/Gallery.js';
-import { cloudinary } from '../config/cloudinary.js';
+import { deleteFile } from '../config/upload.js';
 
 export const getGalleryImages = async (req, res) => {
   try {
@@ -24,7 +24,10 @@ export const createGalleryImage = async (req, res) => {
     const galleryImage = await Gallery.create({
       title: title || '',
       category: category || 'General',
-      image: { url: req.file.path, publicId: req.file.filename },
+      image: {
+        url: `/uploads/${req.file.filename}`,
+        publicId: req.file.filename,
+      },
       order: order ? Number(order) : 0,
     });
 
@@ -47,8 +50,11 @@ export const updateGalleryImage = async (req, res) => {
     if (order !== undefined) galleryImage.order = Number(order);
 
     if (req.file) {
-      await cloudinary.uploader.destroy(galleryImage.image.publicId);
-      galleryImage.image = { url: req.file.path, publicId: req.file.filename };
+      deleteFile(galleryImage.image.url);
+      galleryImage.image = {
+        url: `/uploads/${req.file.filename}`,
+        publicId: req.file.filename,
+      };
     }
 
     const updated = await galleryImage.save();
@@ -65,7 +71,7 @@ export const deleteGalleryImage = async (req, res) => {
       return res.status(404).json({ message: 'Gallery image not found' });
     }
 
-    await cloudinary.uploader.destroy(galleryImage.image.publicId);
+    deleteFile(galleryImage.image.url);
     await Gallery.findByIdAndDelete(req.params.id);
     res.json({ message: 'Gallery image deleted' });
   } catch (error) {

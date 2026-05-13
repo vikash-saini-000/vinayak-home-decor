@@ -6,7 +6,7 @@ import {
   deleteGalleryImage,
 } from '../controllers/galleryController.js';
 import protect from '../middleware/auth.js';
-import { upload } from '../config/cloudinary.js';
+import upload from '../config/upload.js';
 
 const router = Router();
 
