@@ -1,109 +1,95 @@
 ---
 name: testing-vinayak-home-decor
-description: Test the Vinayak Home Decor MERN stack app end-to-end. Use when verifying frontend UI, backend API, admin dashboard, or inquiry/testimonial/contact flows.
+description: End-to-end testing of the Vinayak Home Decor MERN luxury furniture website. Use when verifying frontend customer journey, admin dashboard, or API changes.
 ---
 
 # Testing Vinayak Home Decor
 
-## Prerequisites
-
-- MongoDB must be running locally (or provide a MongoDB Atlas URI)
-- Node.js installed
-- No Cloudinary credentials needed for basic CRUD testing (only needed for image uploads)
-
 ## Environment Setup
 
-1. **Install MongoDB locally** (if not available):
+1. **Start MongoDB** (local instance for testing):
    ```bash
-   curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg
-   echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] http://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-   sudo apt-get update -qq && sudo apt-get install -y -qq mongodb-org
+   mongod --dbdir /home/ubuntu/mongo-data --port 27017 &
    ```
 
-2. **Start MongoDB**:
+2. **Seed admin user** (required for admin dashboard access):
    ```bash
-   sudo mkdir -p /data/db && sudo chown mongodb:mongodb /data/db
-   sudo mongod --dbpath /data/db --fork --logpath /var/log/mongod.log
+   cd /home/ubuntu/repos/vinayak-home-decor/backend
+   node -e "
+   import('mongoose').then(m => m.default.connect('mongodb://localhost:27017/vinayak-home-decor'))
+   .then(() => import('bcryptjs'))
+   .then(b => b.default.hash('admin123', 10))
+   .then(hash => import('./models/User.js').then(U => U.default.findOneAndUpdate(
+     { email: 'admin@vinayakhomedecor.com' },
+     { name: 'Admin', email: 'admin@vinayakhomedecor.com', password: hash },
+     { upsert: true, new: true }
+   )))
+   .then(() => { console.log('Admin seeded'); process.exit(0); })
+   .catch(e => { console.error(e); process.exit(1); });
+   "
    ```
 
-3. **Create backend `.env`**:
+3. **Start backend**:
    ```bash
-   cat > backend/.env << 'EOF'
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/vinayak-home-decor
-   JWT_SECRET=test_jwt_secret_for_local_dev_12345
-   CLOUDINARY_CLOUD_NAME=placeholder
-   CLOUDINARY_API_KEY=placeholder
-   CLOUDINARY_API_SECRET=placeholder
-   ADMIN_EMAIL=admin@vinayakhomedecor.com
-   ADMIN_PASSWORD=admin123
-   EOF
+   cd /home/ubuntu/repos/vinayak-home-decor/backend
+   MONGODB_URI=mongodb://localhost:27017/vinayak-home-decor JWT_SECRET=test-secret-key PORT=5000 node server.js &
    ```
 
-4. **Install dependencies and start servers**:
+4. **Start frontend**:
    ```bash
-   cd backend && npm install && npm run dev &
-   cd frontend && npm install && npm run dev &
+   cd /home/ubuntu/repos/vinayak-home-decor/frontend
+   npm run dev &
    ```
 
-5. **Verify**: Backend prints "MongoDB Connected: localhost" and "Admin user created". Frontend runs on port 5173 with proxy to port 5000.
+5. Frontend runs on `localhost:5173`, backend on `localhost:5000`.
 
-## Default Admin Credentials
+## Admin Credentials
 
 - Email: `admin@vinayakhomedecor.com`
 - Password: `admin123`
-- Admin login page: `/admin`
-- Admin dashboard: `/admin/dashboard`
+- Login path: `/admin`
+- Dashboard path: `/admin/dashboard`
 
 ## Key Test Flows
 
-### 1. Contact Form Inquiry (Public → DB → Admin)
-- Navigate to `/contact`
-- Fill name, email, phone, message
-- Click "Send Inquiry"
-- Expected: green success message, form fields clear
-- Verify in admin: `/admin/dashboard` → Inquiries tab shows the inquiry with "NEW" badge
+### 1. Product Lifecycle
+- Admin: Products tab → Add Product → fill all fields (title, description, category, price, material, dimensions, featured toggle, image upload) → Create
+- Verify: Toast "Product created" (NOT a browser alert)
+- Public: `/collections` → product card visible → click to `/product/:id` → verify material & dimensions fields render
 
-### 2. Admin Login
-- Navigate to `/admin`
-- Enter admin credentials
-- Expected: redirect to `/admin/dashboard` with 5 tabs (Products, Testimonials, Gallery, Inquiries, Contact)
+### 2. Inquiry CRM
+- Public: `/contact` → fill name, email, phone, message → Submit
+- Verify: Success message "Thank you! Your inquiry has been submitted successfully."
+- Admin: Inquiries tab → verify inquiry with "NEW" badge → change status via dropdown (New/Contacted/Negotiating/Closed) → verify toast
 
-### 3. Contact Info Update (Admin → Public)
-- Admin dashboard → Contact tab
-- Update phone/email/social links
-- Click "Update Contact Info"
-- Expected: alert "Contact info updated!"
-- Verify: navigate to homepage, check footer shows updated values
+### 3. Website Settings
+- Admin: Site Settings tab → change WhatsApp number → Update Settings
+- Verify: Toast "Settings updated"
+- Public: Navigate to any page → scroll down → floating WhatsApp button href should contain updated number
 
-### 4. Testimonial CRUD (Admin → Public)
-- Admin dashboard → Testimonials tab → "Add Testimonial"
-- Fill name, role, text, select star rating (no photo needed)
-- Click "Create"
-- Expected: modal closes, testimonial appears in admin list
-- Verify: navigate to homepage, scroll to testimonials section, see the new testimonial in carousel
+### 4. Dashboard Overview
+- Admin: Overview tab → verify stats cards match actual DB counts (products, inquiries, reviews, gallery)
+- Verify status breakdown counts and recent items lists
 
-### 5. Inquiry Management
-- Admin dashboard → Inquiries tab
-- Click eye icon to mark as read → "NEW" badge disappears, unread count decrements
-- Click trash icon to delete
+### 5. Collections Search & Filter
+- Public: `/collections` → type in search bar → verify filtered results
+- Click category tabs → verify products filter by category
+- Sort dropdown works (newest, price low/high, name A-Z)
 
-## Known Limitations
+### 6. Floating WhatsApp Button
+- Appears after scrolling 300px on any public page
+- Uses WhatsApp number from admin settings (fetched via API)
 
-- **Image uploads require real Cloudinary credentials** — product creation, gallery upload, and testimonial photo upload will fail with placeholder credentials
-- **Product CRUD cannot be tested without Cloudinary** since images are mandatory for products
-- The frontend uses a **demo fallback pattern**: if the API is unreachable, sections show hardcoded demo data instead
-- The loading screen animation takes ~2-3 seconds on each page navigation
-- The "Update Contact Info" button triggers a browser `alert()` dialog which may block automated tools — dismiss it to continue
+## Known Gotchas
 
-## Frontend Architecture Notes
-
-- Vite dev server on port 5173 proxies `/api` to `http://localhost:5000`
-- All public sections (Products, Testimonials, Gallery, Contact) fetch from API with graceful demo fallback
-- Admin routes are protected — JWT token stored in localStorage
-- Cinematic loading screen appears on first visit and page transitions
+- **Stale server**: If material/dimensions fields aren't saving, the backend might be running old code. Kill with `pkill -f "node.*server.js"` and restart.
+- **Image upload via browser testing**: Use JavaScript `DataTransfer` API to programmatically set files on the hidden file input, since drag-and-drop is hard to automate.
+- **Browser alerts**: Some older code paths might use `window.alert()`. Current code uses toast notifications — if you see alerts, the wrong server version may be running.
+- **Demo fallback**: Frontend gracefully falls back to demo data if API is unreachable. When testing with real backend, ensure the backend is actually running or you'll only see demo content.
+- **Image uploads use local multer storage** (not Cloudinary). Images are stored in `backend/public/uploads/` and served at `/uploads/filename.jpg`.
+- The loading screen animation takes ~2-3 seconds on each page navigation.
+- Vite dev server on port 5173 proxies `/api` to `http://localhost:5000` and `/uploads` to `http://localhost:5000`.
 
 ## Devin Secrets Needed
 
-- `MONGODB_URI` — MongoDB connection string (can use local MongoDB instead)
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — only needed for image upload testing
+None — testing uses local MongoDB with no external dependencies.
