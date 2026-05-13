@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #C8A97E;
+  --color-gold-light: #D4B896;
+  --color-gold-dark: #A8895E;
+  --color-dark: #0A0A0A;
+  --color-darker: #050505;
+  --color-dark-card: #111111;
+  --color-dark-border: #1a1a1a;
+  --color-warm-orange: #E8956A;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #0A0A0A;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: #C8A97E;
+    color: #0A0A0A;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0A0A0A;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #C8A97E;
+    border-radius: 3px;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(200, 169, 126, 0.1);
+  }
+
+  .glass-strong {
+    background: rgba(17, 17, 17, 0.85);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(200, 169, 126, 0.15);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #C8A97E 0%, #E8956A 50%, #C8A97E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 40px rgba(200, 169, 126, 0.15), 0 0 80px rgba(200, 169, 126, 0.05);
+  }
+
+  .glow-text {
+    text-shadow: 0 0 40px rgba(200, 169, 126, 0.3);
+  }
+
+  .ambient-gradient {
+    background: radial-gradient(
+      600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(200, 169, 126, 0.06),
+      transparent 40%
+    );
+  }
+
+  .section-padding {
+    padding: 6rem 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-padding {
+      padding: 8rem 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding: 10rem 4rem;
+    }
+  }
+}
