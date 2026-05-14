@@ -6,7 +6,7 @@ import { settingsAPI } from '../services/api';
 const WhatsAppButton = () => {
   const [show, setShow] = useState(false);
   const [tooltip, setTooltip] = useState(true);
-  const [whatsappNumber, setWhatsappNumber] = useState('919876543210');
+  const [whatsappNumber, setWhatsappNumber] = useState('917737040962');
 
   useEffect(() => {
     const handleScroll = () => setShow(window.scrollY > 300);

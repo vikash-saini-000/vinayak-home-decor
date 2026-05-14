@@ -9,7 +9,7 @@ import { settingsAPI } from '../../services/api';
 const HeroSection = () => {
   const heroRef = useRef(null);
   const parallaxRef = useRef(null);
-  const [whatsappNumber, setWhatsappNumber] = useState('919876543210');
+  const [whatsappNumber, setWhatsappNumber] = useState('917737040962');
 
   useEffect(() => {
     settingsAPI.get().then(({ data }) => {
@@ -102,18 +102,18 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.1 }}
-          className="mt-10 flex flex-wrap gap-4"
+          className="mt-10 flex flex-wrap items-center gap-5 md:gap-6"
         >
           <Link
             to="/collections"
-            className="group relative px-8 py-4 bg-[#C8A97E] text-[#0A0A0A] text-sm font-semibold tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:shadow-lg hover:shadow-[#C8A97E]/20"
+           className="group relative flex items-center justify-center min-w-[230px] px-8 py-4 bg-[#C8A97E] text-[#0A0A0A] text-sm font-semibold tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:shadow-lg hover:shadow-[#C8A97E]/20"
           >
             <span className="relative z-10">Explore Collections</span>
             <div className="absolute inset-0 bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
           </Link>
           <Link
             to="/contact"
-            className="px-8 py-4 border border-white/20 text-white text-sm tracking-[0.2em] uppercase hover:border-[#C8A97E] hover:text-[#C8A97E] transition-all duration-500"
+            className="flex items-center justify-center min-w-[230px] px-8 py-4 border border-white/20 text-white text-sm tracking-[0.2em] uppercase hover:border-[#C8A97E] hover:text-[#C8A97E] transition-all duration-500"
           >
             Get in Touch
           </Link>
@@ -121,7 +121,7 @@ const HeroSection = () => {
             href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi! I visited your website and I am interested in your furniture.')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-8 py-4 bg-[#25D366] text-white text-sm font-semibold tracking-[0.2em] uppercase hover:bg-[#22c55e] transition-all duration-500 shadow-lg shadow-[#25D366]/10"
+            className="flex items-center justify-center gap-2 min-w-[230px] px-8 py-4 bg-[#25D366] text-white text-sm font-semibold tracking-[0.2em] uppercase hover:bg-[#22c55e] transition-all duration-500 shadow-lg shadow-[#25D366]/10"
           >
             <FaWhatsapp className="text-lg" />
             WhatsApp

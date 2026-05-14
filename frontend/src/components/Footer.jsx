@@ -12,7 +12,7 @@ const Footer = () => {
     phone: '+91 98765 43210',
     email: 'info@vinayakhomedecor.com',
     address: 'Main Market, India',
-    whatsapp: '+91 98765 43210',
+    whatsapp: '+91 77370 40962',
     instagram: '',
     facebook: '',
     youtube: '',

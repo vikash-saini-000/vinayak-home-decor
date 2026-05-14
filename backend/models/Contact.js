@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const contactSchema = new mongoose.Schema(
   {
     phone: { type: String, default: '+91 98765 43210' },
-    whatsapp: { type: String, default: '+91 98765 43210' },
+    whatsapp: { type: String, default: '+91 7737040962' },
     email: { type: String, default: 'info@vinayakhomedecor.com' },
     address: { type: String, default: 'Vinayak Home Decor, Main Market, India' },
     mapUrl: { type: String, default: '' },

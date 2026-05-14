@@ -59,12 +59,7 @@ const Navbar = () => {
                 />
               </Link>
             ))}
-            <Link
-              to="/contact"
-              className="ml-4 px-6 py-2.5 border border-[#C8A97E]/30 text-[#C8A97E] text-sm rounded-none hover:bg-[#C8A97E] hover:text-[#0A0A0A] transition-all duration-500 tracking-wider uppercase"
-            >
-              Inquire
-            </Link>
+          
           </div>
 
           <button
@@ -112,13 +107,7 @@ const Navbar = () => {
               exit={{ opacity: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
             >
-              <Link
-                to="/contact"
-                onClick={closeMobile}
-                className="mt-4 px-8 py-3 border border-[#C8A97E]/30 text-[#C8A97E] text-sm tracking-[0.3em] uppercase hover:bg-[#C8A97E] hover:text-[#0A0A0A] transition-all duration-500"
-              >
-                Inquire Now
-              </Link>
+             
             </motion.div>
           </motion.div>
         )}

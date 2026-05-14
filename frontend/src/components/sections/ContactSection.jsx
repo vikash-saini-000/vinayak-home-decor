@@ -13,7 +13,7 @@ const ContactSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const [contactDetails, setContactDetails] = useState({
     phone: '+91 98765 43210',
-    whatsapp: '+91 98765 43210',
+    whatsapp: '+91 77370 40962',
     email: 'info@vinayakhomedecor.com',
     address: 'Main Market, India',
     mapUrl: '',
@@ -26,7 +26,7 @@ const ContactSection = () => {
         if (data) {
           setContactDetails({
             phone: data.phone || '+91 98765 43210',
-            whatsapp: data.whatsapp || '+91 98765 43210',
+            whatsapp: data.whatsapp || '+91 77370 40962',
             email: data.email || 'info@vinayakhomedecor.com',
             address: data.address || 'Main Market, India',
             mapUrl: data.mapUrl || '',
